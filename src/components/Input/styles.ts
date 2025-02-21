@@ -4,12 +4,17 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create(
     {
         input: {
-            borderWidth: 1,
-            color: colors.white
+            color: colors.gray,
+            borderRadius: 7,
+            padding: 10,
+            backgroundColor: colors.background_secondary
         },
         container: {
             width: "100%",
             alignItems: "center"
+        },
+        title: {
+            color: colors.white,
         }
     }
 )
