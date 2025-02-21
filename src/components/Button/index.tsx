@@ -10,11 +10,11 @@ type Props = TouchableOpacityProps & {
 export default function Button({ onPress, text, size = Length.medium}: Props) {
     return (
         <TouchableOpacity
-            activeOpacity={0.8}
+            activeOpacity={0.7}
             style={[styles.button, buttonSizeStyles[size]]}
             onPress={onPress}
         >
-            <Text style={textSizeStyles[size]}>{text}</Text>
+            <Text style={[styles.text, textSizeStyles[size]]}>{text}</Text>
         </TouchableOpacity>
     )
 }
