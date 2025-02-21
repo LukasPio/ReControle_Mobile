@@ -1,13 +1,17 @@
-import { useState } from "react";
 import { TextInput, TextInputProps } from "react-native";
-import { styles } from "./styles";
+import { InputSizeStyles, styles } from "./styles";
+import { Length } from "@/src/enums/length";
 
-export default function Input({value, onChangeText}: TextInputProps) {
+type Props = TextInputProps & {
+    size?: Length
+}
+
+export default function Input({value, onChangeText, size = Length.medium}: Props) {
     return (
         <TextInput 
         value={value}
         onChangeText={onChangeText} 
-        style={styles.input}
+        style={[styles.input, InputSizeStyles[size]]}
         placeholder="Email"
         />
     )
