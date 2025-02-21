@@ -1,6 +1,5 @@
-import colors from "@/src/constants/colors";
+import colors from "@/constants/colors";
 import { StyleSheet } from "react-native";
-import { Colors } from "react-native/Libraries/NewAppScreen";
 
 export const styles = StyleSheet.create({
     button: {

@@ -1,6 +1,6 @@
 import { Text, TouchableOpacity, TouchableOpacityProps } from "react-native";
 import { textSizeStyles, buttonSizeStyles, styles } from "./styles";
-import { Length } from "@/src/enums/length";
+import { Length } from "@/enums/length";
 
 type Props = TouchableOpacityProps & {
     text: string,
