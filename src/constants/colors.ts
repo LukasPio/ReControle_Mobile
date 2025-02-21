@@ -3,7 +3,8 @@ const colors = {
     secondary: "#a8630d",
     background: "#c9b293",
     black: "#000000",
-    white: "#ffffff"
+    white: "#ffffff",
+    green: "#86EE71"
 }
 
 export default colors;

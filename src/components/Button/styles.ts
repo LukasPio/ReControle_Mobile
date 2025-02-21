@@ -1,8 +1,10 @@
+import colors from "@/src/constants/colors";
 import { StyleSheet } from "react-native";
+import { Colors } from "react-native/Libraries/NewAppScreen";
 
 export const styles = StyleSheet.create({
     button: {
-        backgroundColor: "#ffffff",
+        backgroundColor: colors.green,
         justifyContent: "center",
         alignItems: "center",
         textAlign: "center",
