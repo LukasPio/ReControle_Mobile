@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, Alert} from "react-native" 
 import Button from "@/components/Button"
 import { Length } from "@/enums/length"
+import colors from "@/constants/colors";
 
 export default function Home() {
     const hello = () => {
@@ -20,7 +21,7 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 8,
         gap: 20,
-        backgroundColor: "#2b2e2a",
+        backgroundColor: colors.background,
         justifyContent: "center",
         alignItems: "center"
     },
@@ -28,6 +29,6 @@ const styles = StyleSheet.create({
         width: "70%", 
         textAlign: "center",
         fontSize: 28,
-        color: "#ffffff"
+        color: colors.white
     }
 })
