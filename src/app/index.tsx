@@ -1,37 +1,38 @@
-import { View, Text, StyleSheet, Alert} from "react-native" 
-import Button from "../components/Button"
-import { Length } from "../enums/length"
-import Input from "../components/Input";
 import { useState } from "react";
+import { View, Text, StyleSheet } from "react-native";
+import { Length } from "@/enums/length";
+import Input from "@/components/Input";
+import colors from "@/constants/colors";
+import Button from "@/components/Button";
+import TextLink from "@/components/TextLink";
 
-export default function Index() {
-    const hello = () => {
-        Alert.alert("Olá", "Seja bem-vindo ao ReControle");
-    }
+export default function Register() {
 
     const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [passwordConfirm, setPasswordConfirm] = useState("");
+    const [name, setName] = useState("");
+
     return (
         <View style={styles.container}>
-            <Text style={styles.text}>Hello World!</Text>
-            <Button text="Clique aqui chefia" size={Length.large} onPress={hello}/>
-            <Input value={email} onChangeText={setEmail}/>
+            <Input title="Nome" value={name} onChangeText={setName} size={Length.medium}/>
+            <Input title="Email" isEmail={true} value={email} onChangeText={setEmail} size={Length.medium}/>
+            <Input title="Senha" isPassword={true} value={password} onChangeText={setPassword} size={Length.medium}/>
+            <Input title="Confirme a senha" isPassword={true} value={passwordConfirm} onChangeText={setPasswordConfirm} size={Length.medium}/>
+            <TextLink href="/login">Já possui uma conta? Clique aqui.</TextLink>
+            <Button text="Criar conta" size={Length.medium}/>
         </View>
     )
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create(
+ {  
     container: {
         flex: 1,
-        padding: 8,
-        gap: 20,
-        backgroundColor: "#2b2e2a",
+        alignItems: "center",
         justifyContent: "center",
-        alignItems: "center"
-    },
-    text: {
-        width: "70%", 
-        textAlign: "center",
-        fontSize: 28,
-        color: "#ffffff"
+        backgroundColor: colors.background,
+        gap: 12
     }
-})
+ }
+)
