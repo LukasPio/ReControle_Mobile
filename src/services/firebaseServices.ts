@@ -1,76 +1,88 @@
-import { db } from "@/config/firebaseConfig"
-import { showMessage, showErrorMessage } from "@/utils/alertMaker"
-import isValidEmail from "@/utils/emailValidator"
-import { router } from "expo-router"
-import { collection, addDoc, deleteDoc, doc, getDoc, updateDoc, query, where, getDocs } from "firebase/firestore"
+import { auth } from "@/config/firebaseConfig";
+import { UserCreateRequestDTO, UserCreateSchema } from "@/DTOs/UserCreateRequestDTO";
+import { UserLoginRequestDTO, UserLoginSchema } from "@/DTOs/UserLoginRequestDTO";
+import { showErrorMessage, showMessage } from "@/utils/alertMaker";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
 
-export const createAccount = async (data: UserCreateRequestDTO) => {
-    if (data.name == "" || data.password == "" || data.password == "" ||data.passwordConfirm == "") {
-        showErrorMessage("Todos os campos devem ser preenchidos");
-        return;
-    }
-    if (!isValidEmail(data.email)) {
-        showErrorMessage("O E-mail inserido não é válido");
-        return;
-    }
-    if (data.password !== data.passwordConfirm) {
-        showErrorMessage("As senhas devem ser iguais");
-        return;
-    }
-    if (data.password.length < 8) {
-        showErrorMessage("A senha devem conter no mínimo 8 caracteres");
-        return;
-    }
-    
-    const users = collection(db, "users");
-    const q = query(users, where("email", "==", data.email));
-    const querySnapshot = await getDocs(q);
+export const registerUser = async ({ name, email, password, passwordConfirm }: UserCreateRequestDTO) => {
 
-    if (!querySnapshot.empty) {
-        showErrorMessage("Já existe uma conta com o E-mail inserido");
-        return;
-    } 
+  const userData = { name, email, password, passwordConfirm }
+  const dataValidation = UserCreateSchema.safeParse(userData)
 
-    try {
-        await addDoc(collection(db, "users"), {
-            name: data.name, 
-            email: data.email,
-            password: data.password
-        });
-        showMessage("Sucesso!", "Sua conta foi criada com sucesso")
-        
-        router.push("/login")
-    }
-    catch (e) {
-        showErrorMessage("Tente novamente mais tarde: " + e);
-    }
-}
+  if (!dataValidation.success) {
+    showErrorMessage(dataValidation.error.errors[0].message);
+    return;
+  }
 
-export const login = async (data: UserLoginRequestDTO) => {
-    if (data.email == "" || data.password == "") {
-        showErrorMessage("Todos os campos devem ser preenchidos");
-    }
-    if (!isValidEmail(data.email)) {
-        showErrorMessage("O E-mail inserido não é válido");
-        return;
-    }
-    if (data.password.length < 8) {
-        showErrorMessage("A senha deve conter no mínimo 8 caracteres");
-        return;
-    }
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
 
-    try {
-        const users = collection(db, "users");
-        const q = query(users, where("email", "==", data.email), where("password", "==", data.password))
-        const querySnapshot = await getDocs(q);
-    
-        if (querySnapshot.empty) {
-            showErrorMessage("Email ou senha inválidos");
-            return;
-        }
+    await updateProfile(user, { displayName: name })
 
-        router.replace("/home")
-    } catch(e) {
-        showErrorMessage("Tente novamente mais tarde: " + e)
+    const userFirstName = user.displayName?.split(" ")[0];
+
+    showMessage("Sucesso", "Seja bem-vindo " + userFirstName + '!');
+  } catch (error: any) {
+    switch (error.code) {
+      case "auth/email-already-in-use":
+        showErrorMessage("Este e-mail já está cadastrado. Tente outro.");
+        break;
+      case "auth/invalid-email":
+        showErrorMessage("E-mail inválido. Digite um e-mail válido.");
+        break;
+      case "auth/weak-password":
+        showErrorMessage("Senha muito fraca. Use pelo menos 6 caracteres.");
+        break;
+      case "auth/operation-not-allowed":
+        showErrorMessage("Erro no servidor. Tente novamente mais tarde.");
+        break;
+      default:
+        showErrorMessage("Erro ao criar conta. Tente novamente.");
+        console.error(error);
     }
-}
+  }
+};
+
+export const loginUser = async ({ email, password }: UserLoginRequestDTO) => {
+
+  const userData = { email, password }
+  const dataValidation = UserLoginSchema.safeParse(userData);
+
+  if (!dataValidation.success) {
+    showErrorMessage(dataValidation.error.errors[0].message);
+    return;
+  }
+
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    return userCredential.user;
+  } catch (error: any) {
+    switch (error.code) {
+      case "auth/invalid-email":
+        showErrorMessage("E-mail inválido. Tente novamente.")
+        break;
+      case "auth/invalid-credential":
+        showErrorMessage("E-mail e/ou senha incorretos.");
+        break;
+      case "auth/user-disabled":
+        showErrorMessage("Conta desativada. Entre em contato com o suporte.");
+        break;
+      case "auth/too-many-requests":
+        showErrorMessage("Muitas tentativas falhas. Tente novamente mais tarde.");
+        break;
+      default:
+        showErrorMessage("Erro ao fazer login. Tente novamente.");
+        console.error(error);
+    }
+  }
+};
+
+// Logout do usuário
+export const logoutUser = async () => {
+  try {
+    await signOut(auth);
+  } catch (error) {
+    showErrorMessage("Tente novamente mais tarde: " + error)
+  }
+};
