@@ -24,7 +24,7 @@ export const registerUser = async ({ name, email, password, passwordConfirm }: U
     const userFirstName = user.displayName?.split(" ")[0];
 
     await sendEmailVerification(user);
-    showMessage("Quase lá " + userFirstName + "!", "Enviamos um link para verificação no seu E-mail.")
+    showMessage("Quase lá " + userFirstName + "!", "Enviamos um link para verificação no seu e-mail.")
 
     router.replace("/login");
 
