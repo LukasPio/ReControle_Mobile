@@ -2,7 +2,8 @@ import { auth } from "@/config/firebaseConfig";
 import { UserCreateRequestDTO, UserCreateSchema } from "@/DTOs/UserCreateRequestDTO";
 import { UserLoginRequestDTO, UserLoginSchema } from "@/DTOs/UserLoginRequestDTO";
 import { showErrorMessage, showMessage } from "@/utils/alertMaker";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
+import { Redirect, router } from "expo-router";
+import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
 
 export const registerUser = async ({ name, email, password, passwordConfirm }: UserCreateRequestDTO) => {
 
@@ -22,7 +23,11 @@ export const registerUser = async ({ name, email, password, passwordConfirm }: U
 
     const userFirstName = user.displayName?.split(" ")[0];
 
-    showMessage("Sucesso", "Seja bem-vindo " + userFirstName + '!');
+    await sendEmailVerification(user);
+    showMessage("Quase lá " + userFirstName + "!", "Enviamos um link para verificação no seu e-mail.")
+
+    router.replace("/login");
+
   } catch (error: any) {
     switch (error.code) {
       case "auth/email-already-in-use":
@@ -56,7 +61,15 @@ export const loginUser = async ({ email, password }: UserLoginRequestDTO) => {
 
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    return userCredential.user;
+    const user = userCredential.user;
+
+    if (!user.emailVerified) {
+      showErrorMessage("Verifique seu E-mail antes de fazer login.")
+      return;
+    }
+
+    router.replace("/home");
+
   } catch (error: any) {
     switch (error.code) {
       case "auth/invalid-email":

@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 export const UserCreateSchema = z.object({
-    name: z.string().min(1, "Nome não foi inseridos."),
+    name: z.string().min(1, "Nome não foi inserido."),
     email: z.string().email("E-mail inválido. Tente novamente."),
     password: z.string().min(6, "A senha deve conter pelo menos 6 caracteres."),
     passwordConfirm: z.string(),
